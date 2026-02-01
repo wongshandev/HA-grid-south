@@ -2,9 +2,17 @@
 
 # 南方电网电费数据HA集成
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/cubicpill/china_southern_power_grid_stat)](https://github.com/CubicPill/china_southern_power_grid_stat/releases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+> 本仓库 Fork 自 [CubicPill/china_southern_power_grid_stat](https://github.com/CubicPill/china_southern_power_grid_stat)，由于原作者已停止维护，本仓库将继续维护并修复问题。
+
+## 修复记录
+
+### 2026-02-01
+- **修复 API 响应解析错误**：将 `Accept-Encoding` 从 `gzip, deflate, br` 改为 `gzip, deflate`，解决因缺少 Brotli 解压库导致 API 响应无法正确解析的问题。
+
+---
 
 ## 支持功能
 
@@ -29,31 +37,64 @@
 - 上月累计用电量、电费
 - 上月每日用电量、电费
 
-❌**不支持**阶梯电费设置（仅能获取当前所在阶梯）、峰谷电价设置和电费计算（本插件只进行数据抓取和转换，不进行任何计算），
-暂时也没有支持计划（南网暂时没有统一的API），如有需求，建议单独创建对应的电价实体。
+❌**不支持**阶梯电费设置（仅能获取当前所在阶梯）、峰谷电价设置和电费计算（本插件只进行数据抓取和转换，不进行任何计算），暂时也没有支持计划（南网暂时没有统一的API），如有需求，建议单独创建对应的电价实体。
 
 ❌因为南网登录API调整，不再支持登录态失效之后自动重新登录，需要手动重新登录。
-## 使用方法
 
-使用[HACS](https://hacs.xyz/)或[手动下载安装](https://github.com/CubicPill/china_southern_power_grid_stat/releases)
+---
 
-注意：本集成需求`Home Assistant`最低版本为`2022.11`。
+## 安装方法
 
-### 配置界面
+### 方法一：HACS 自定义仓库（推荐）
 
-支持的登录方式
+1. 打开 HACS → 集成
+2. 点击右上角 **三个点** → **自定义存储库**
+3. 填写：
+   - **存储库**: `wongshandev/HA-grid-south`
+   - **类别**: 选择 `集成`
+4. 点击 **添加**
+5. 搜索 **China Southern Power Grid** 并安装
+6. **重启 Home Assistant**
 
-<img src="https://raw.githubusercontent.com/CubicPill/china_southern_power_grid_stat/master/img/setup_login.png" alt="" style="width: 400px;">
+### 方法二：手动安装
 
-配置界面
+1. 下载本仓库的 [最新代码](https://github.com/wongshandev/HA-grid-south/archive/refs/heads/master.zip)
+2. 解压后，将 `custom_components/china_southern_power_grid_stat` 文件夹复制到 Home Assistant 的 `config/custom_components/` 目录下
+3. **重启 Home Assistant**
 
-<img src="https://raw.githubusercontent.com/CubicPill/china_southern_power_grid_stat/master/img/setup_add_account.png" alt="" style="width: 400px;">
+### 方法三：SSH 命令安装
 
-添加缴费号
+```bash
+# 进入 Home Assistant 配置目录
+cd /homeassistant/custom_components
 
-<img src="https://raw.githubusercontent.com/CubicPill/china_southern_power_grid_stat/master/img/setup_select_account.png" alt="" style="width: 400px;">
+# 下载并安装
+rm -rf china_southern_power_grid_stat
+wget https://github.com/wongshandev/HA-grid-south/archive/refs/heads/master.zip
+unzip master.zip
+mv HA-grid-south-master/custom_components/china_southern_power_grid_stat ./
+rm -rf HA-grid-south-master master.zip
 
-传感器列表
+# 重启 Home Assistant
+```
+
+---
+
+## 配置步骤
+
+1. 进入 **设置 → 设备与服务 → 添加集成**
+2. 搜索 **南方电网** 或 **China Southern Power Grid**
+3. 选择登录方式（推荐 **短信验证码登录**）
+4. 输入手机号，获取验证码并登录
+5. 登录成功后，点击 **配置 → 添加已绑定的缴费号**
+6. 选择你的缴费号即可
+
+注意：本集成需求 `Home Assistant` 最低版本为 `2022.11`。
+
+---
+
+## 传感器列表
+
 - 余额
 - 欠费
 - 当前阶梯档位
@@ -71,72 +112,30 @@
 - 最近日电费
 - 昨日用电量
 
+---
 
+## 常见问题
 
+### Q: 登录后显示 "Login expired" 或无法获取数据
 
-传感器额外参数（每月用量、每日用量）
+A: 这是因为南网 API 调整，登录态会过期。请删除集成后重新添加，使用短信验证码重新登录。
 
-<img src="https://raw.githubusercontent.com/CubicPill/china_southern_power_grid_stat/master/img/sensor_attr.png" alt="" style="width: 400px;">
+### Q: API 响应解析错误 (JSONDecodeError)
 
-参数设置
+A: 本仓库已修复此问题。如果你使用的是原仓库 `CubicPill/china_southern_power_grid_stat`，请切换到本仓库。
 
-<img src="https://raw.githubusercontent.com/CubicPill/china_southern_power_grid_stat/master/img/setup_params.png" alt="" style="width: 400px;">
+### Q: HACS 无法下载本仓库
 
-### 数据更新策略
+A: 可以使用手动安装方法，直接下载代码并复制到 `custom_components` 目录。
 
-由于上月数据和去年数据在生成之后一般不会发生变化，因此对于上月累计用电量、上月每日用电量、上年度累计用电量、上年度每月用电量，数据更新间隔将会与一般更新间隔有所不同。
-具体更新策略如下：
+---
 
-对于上月数据，在每月前3天（1~3日）将会跟随一般更新间隔更新（默认为4小时），其余时间将会停止更新，但数据依然可用。
+## 致谢
 
-对于去年数据，在每年一月的前7天（1月1日~1月7日）将会每天更新（在每天第一次触发更新时更新），其余时间将会停止更新，但数据依然可用。
+### 原作者
+- [CubicPill](https://github.com/CubicPill) - 原项目作者
 
-如果需要强制刷新数据，重载集成即可。
-
-## 一些技术细节
-
-### 登录接口加密原理
-
-登录接口的请求数据和返回数据都经过加密，其中请求数据经过两层加密：整个请求数据的`AES`加密和密码字段的`RSA`
-公钥加密（密钥、公钥具体值见代码）。
-
-加密前的请求数据结构如下：
-
-```json5
-{
-  "areaCode": "xxx",
-  "acctId": "xxx",
-  "logonChan": "xxx",
-  "credType": "xxx",
-  "credentials": "xxx"  // <- encrypted with RSA
-}
-```
-
-返回数据同样经过`AES`加密，密钥与请求数据相同。但返回值其中暂时不包含有用信息，验证状态码正常后可以直接忽略内容。
-
-### Web端接口和App端接口
-
-对于南网API相关信息的提取主要通过Web端的抓包和JS代码获取。
-之后因为登录态有效期问题，对App端抓包进行比对后切换到App端API。
-经过验证，Web端（网上营业厅）和App端（南网在线）的API接口基本相同，差别主要在于：
-
-|              | Web                        | App                     |
-|--------------|----------------------------|-------------------------|
-| API路径        | ucs/ma/wt/                 | ucs/ma/zt/              |
-| 支持登录方式       | 手机号+验证码（+密码），南网在线/微信/支付宝扫码 | 手机号+验证码（+密码），微信/支付宝跳转登录 |
-| token有效期     | 几小时（有待进一步确认）               | 较长（有待进一步确认）                      |
-| Cookies      | token包含在cookies中           | 无cookies                |
-| 敏感信息（姓名、地址等） | 部分信息用“*”隐去                 | 有明文全文                   |
-
-另外在HTTP请求头上有细微的差别（如：UA），但实际上对于请求的返回结果没有影响。
-
-### API 实现库
-
-本项目代码中的[`csg_client/__init__.py`](https://github.com/CubicPill/china_southern_power_grid_stat/blob/master/custom_components/china_southern_power_grid_stat/csg_client/__init__.py)
-是对南网在线 App API 的实现，可以独立于此项目单独使用。
-详细使用方法见`csg_client_demo.py`
-
-## Thank you
+### 贡献者
 - [lyylyylyylyy](https://github.com/lyylyylyylyy): PR [#30](https://github.com/CubicPill/china_southern_power_grid_stat/pull/30) 短信验证码登录支持
 
 感谢[瀚思彼岸](https://bbs.hassbian.com/)论坛以下帖子作者的辛苦付出，排名不分先后
@@ -145,11 +144,3 @@
 - [北京电费查询加强版](https://bbs.hassbian.com/thread-13820-1-1.html)
 - [电费插件（Node-Red流）-广东南方电网](https://bbs.hassbian.com/thread-17830-1-1.html)
 - [【抄作业】电费插件(NR流)-南网](https://bbs.hassbian.com/thread-18122-1-1.html)
-
-自定义集成教程参考：[Building a Home Assistant Custom Component Part 1: Project Structure and Basics](https://aarongodfrey.dev/home%20automation/building_a_home_assistant_custom_component_part_1/)
-
-
-
-
-
-
