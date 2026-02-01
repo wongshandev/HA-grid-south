@@ -200,7 +200,7 @@ class CSGClient:
             "Content-Type": "application/json;charset=utf-8",
             "Origin": "file://",
             HEADER_X_AUTH_TOKEN: "",
-            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Encoding": "gzip, deflate",
             "Connection": "keep-alive",
             "Accept": "application/json, text/plain, */*",
             "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) "
