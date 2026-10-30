@@ -377,7 +377,7 @@ class CSGOptionsFlowHandler(config_entries.OptionsFlow):
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize options flow."""
-        self.config_entry = config_entry
+        # self.config_entry = config_entry # 修复500错误
         self.all_electricity_accounts: list[CSGElectricityAccount] = []
 
     async def async_step_init(
